@@ -25,6 +25,7 @@ func CreateList(sl []int) *ListNode {
 
 func deleteDuplicates(l *ListNode) {
 	//map
+	//TEST
 }
 
 func main() {
