@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ListNode struct {
 	Val  int
@@ -24,13 +26,37 @@ func CreateList(sl []int) *ListNode {
 }
 
 func deleteDuplicates(l *ListNode) {
-	//map
-	//TEST
+	m := make(map[int]bool)
+
+	left, right := l, l
+
+	for l.Next != nil {
+		if _, ok := m[l.Val]; ok {
+			left.Next = right
+			l = l.Next
+			right = l.Next
+		} else {
+			m[l.Val] = true
+			left = l
+			l = l.Next
+			right = l.Next
+		}
+		if _, ok := m[l.Val]; ok {
+			left.Next = nil
+		}
+	}
+}
+
+func printList(l *ListNode) {
+	for l.Next != nil {
+		fmt.Println(l.Val)
+		l = l.Next
+	}
+	fmt.Println(l.Val)
 }
 
 func main() {
-	list := CreateList([]int{1, 2, 3})
-	fmt.Println(list.Val)
-	fmt.Println(list.Next.Val)
-	fmt.Println(list.Next.Next.Val)
+	list := CreateList([]int{1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 7, 8})
+	deleteDuplicates(list)
+	printList(list)
 }
