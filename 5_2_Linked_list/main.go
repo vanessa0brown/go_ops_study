@@ -10,6 +10,10 @@ type ListNode struct {
 }
 
 func CreateList(sl []int) *ListNode {
+	if len(sl) == 0 {
+		return nil
+	}
+
 	res := ListNode{}
 	cur := &res
 	for _, val := range sl {
@@ -26,37 +30,42 @@ func CreateList(sl []int) *ListNode {
 }
 
 func deleteDuplicates(l *ListNode) {
-	m := make(map[int]bool)
+	if l != nil {
 
-	left, right := l, l
+		m := make(map[int]bool)
 
-	for l.Next != nil {
-		if _, ok := m[l.Val]; ok {
-			left.Next = right
-			l = l.Next
-			right = l.Next
-		} else {
-			m[l.Val] = true
-			left = l
-			l = l.Next
-			right = l.Next
-		}
-		if _, ok := m[l.Val]; ok {
-			left.Next = nil
+		left, right := l, l
+
+		for l.Next != nil {
+			if _, ok := m[l.Val]; ok {
+				left.Next = right
+				l = l.Next
+				right = l.Next
+			} else {
+				m[l.Val] = true
+				left = l
+				l = l.Next
+				right = l.Next
+			}
+			if _, ok := m[l.Val]; ok {
+				left.Next = nil
+			}
 		}
 	}
 }
 
 func printList(l *ListNode) {
-	for l.Next != nil {
+	if l != nil {
+		for l.Next != nil {
+			fmt.Println(l.Val)
+			l = l.Next
+		}
 		fmt.Println(l.Val)
-		l = l.Next
 	}
-	fmt.Println(l.Val)
 }
 
 func main() {
-	list := CreateList([]int{1, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 7, 8})
+	list := CreateList([]int{})
 	deleteDuplicates(list)
 	printList(list)
 }
