@@ -15,10 +15,9 @@ func foo() (err error) {
 }
 
 func main() {
-	err := foo()
 
-	if err != nil {
-		fmt.Println("Ошибка при выполнении программы")
+	if err := foo(); err != nil {
+		fmt.Println("Ошибка при выполнении программы:", err)
 	} else {
 		fmt.Println("Успешно")
 	}
