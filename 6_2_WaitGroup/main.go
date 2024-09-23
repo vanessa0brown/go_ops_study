@@ -1,43 +1,51 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
 )
 
-func startGoroutines() error {
+// Функция которая имитирует работу
+func worker(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	time.Sleep(1 * time.Second)
+	fmt.Printf("Worker #%v закончил работу\n", id)
+}
+
+// Функция которая ожидает завершения работы
+func runWorkers(count int) error {
 	wg := sync.WaitGroup{}
 	timer := time.After(2 * time.Second)
-	err := errors.New("Прошло больше 2ух секунд")
 
-	f := func(w *sync.WaitGroup) {
-		// Какая-то работа
-		time.Sleep(1 * time.Second)
-		w.Done()
+	numWorkers := count
+	wg.Add(numWorkers)
+
+	for i := range numWorkers {
+		go worker(i, &wg)
 	}
 
-	for i := 0; i < 10000000; i++ {
-		wg.Add(1)
-		go f(&wg)
-	}
+	done := make(chan struct{})
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
 
 	select {
-	case <-timer:
-		return err
-	default:
+	case <-done:
 		fmt.Println("Успешно")
 		return nil
+	case <-timer:
+		return fmt.Errorf("Не успела выполнится за 2 секунды")
 	}
 }
 
 func main() {
-	err := startGoroutines()
+	err := runWorkers(200000)
 
 	if err != nil {
-		fmt.Printf("Программа завершилась с ошибкой: %v", err)
+		fmt.Printf("При выполнении возникла ошибка: %v", err)
 	}
+
 }
