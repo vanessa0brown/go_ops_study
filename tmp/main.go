@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync/atomic"
@@ -31,14 +32,25 @@ func GetClient() (client.Client, error) {
 func addAge(cl *client.Client, add int) {
 	atomic.AddInt64(&cl.Age, int64(add))
 }
-func main() {
-	cl := &client.Client{Name: "string", Age: 1}
-	//mu := &sync.Mutex{}
 
-	for i := 0; i < 1000; i++ {
-		go addAge(cl, 1)
+func sendData(ctx context.Context, num int) {
+	timer := time.NewTimer(time.Duration(num) * time.Second)
+	select {
+	case <-ctx.Done():
+		fmt.Printf("Процесс %v отменен\n", num)
+		return
+	case <-timer.C:
+		fmt.Printf("Данные процесса %v успешно отправлены\n", num)
 	}
+}
 
-	time.Sleep(1 * time.Second)
-	fmt.Println(cl.Age)
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	for i := range 10 {
+		go sendData(ctx, i)
+	}
+	time.Sleep(5 * time.Second)
+	cancel()
+	time.Sleep(500 * time.Millisecond)
 }
